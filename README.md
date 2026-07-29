@@ -4,9 +4,10 @@ A data analysis project exploring global life expectancy trends and the socioeco
 ## Overview
 This project analyzes life expectancy data across countries and years to identify key drivers of longevity and build predictive models.It is developed using reusable pipelines with OOP format in python.
 ## Dataset
-Source: (add dataset source, e.g., WHO Global Health Observatory, World Bank, Kaggle)
-Features: Country, Year, Life Expectancy, GDP, Population, Adult Mortality, Alcohol Consumption, BMI, Schooling, Immunization Coverage (Hepatitis B, Polio, Diphtheria), HIV/AIDS Prevalence, Health Expenditure, etc.
-Time Range: (e.g., 2000–2015)
+ - Source: (add dataset source, e.g., WHO Global Health Observatory, World Bank, Kaggle)
+ - Features: Country, Year, Life Expectancy, GDP, Population, Adult Mortality, Alcohol Consumption, BMI, Schooling,
+ - Immunization Coverage (Hepatitis B, Polio, Diphtheria), HIV/AIDS Prevalence, Health Expenditure, etc
+ - Time Range: (e.g., 2000–2015)
 ## Methodology
  * Data Cleaning — Handle missing values, correct data types, remove duplicates
  * Exploratory Data Analysis (EDA) — Summary statistics, distribution plots, correlation analysis
