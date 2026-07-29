@@ -1,5 +1,3 @@
-from pipeline.data_eda import EDA
-
 class FeatureSelection:
     def __init__(self,X_set,y_set):
         self.X_set = X_set
