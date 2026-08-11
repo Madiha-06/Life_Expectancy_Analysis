@@ -91,15 +91,3 @@ plots=ResultVisualization(y_test)
 plots.random_forest_plot(prediction_rf)
 # For Linear regression
 plots.linear_regression_plot(prediction_lr)
-
-
-
-
-
-
-
-
-
-
-
-
