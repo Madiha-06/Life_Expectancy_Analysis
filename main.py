@@ -21,32 +21,60 @@ print(df.tail())
 target_col='Life expectancy '
 
 # handling missing values
-nan_val=DataCleaning(df,target_col)
-nan_val.analyze_nan()
-# Since data is positive/negative skewed we will use median to handle missing values
-clean_data=nan_val.handling_nan('median')
-
-#Exploratory Data Analysis
+unclean_val=DataCleaning(df,target_col)
+# Separating column according to types initially
 df_eda=EDA(df,target_col)
-print('Data Information')
-print(df_eda.data_info())
-print('Target Information')
-print(df_eda.target_info())
-# Correlation between Life expectancy and other features (helpful for feature selection)
-print('Correlation heatmap')
-df_eda.target_correlation()
 cat_col=df_eda.categorical_columns()
 num_col,disc_col,cont_col=df_eda.numerical_columns()
 print('Categorical Columns:',cat_col)
 print("Numerical Columns:",num_col)
 print("Disc Columns:",disc_col)
 print("Cont Columns:",cont_col)
-#Relationship between Life expectancy and other features
-df_eda.avg_target_features(cat_col,disc_col,cont_col)
+
+unclean_val.look_skewness()
+unclean_val.analyze_nan()
+#Looking and handling outliers
+unclean_val.look_outliers(num_col)
+# In order to verify outliers we performed following operations with features
+#df[df['Life expectancy '] < 44.2][['Country','Year','Life expectancy ','Adult Mortality',' HIV/AIDS','infant deaths','GDP','Schooling']]
+#df[df['Adult Mortality']>459][['Country','Year','Adult Mortality','Life expectancy ','Total expenditure',' HIV/AIDS','Schooling']]
+#df[df['infant deaths']>55][['Country','Year','infant deaths','Adult Mortality','GDP','Schooling','Hepatitis B',' HIV/AIDS']].sort_values('infant deaths', ascending=False)
+#df[df['percentage expenditure']>1096][['Country','Year','percentage expenditure','GDP']] ( will be dropped due to mismatched scaling)
+#df[df['Hepatitis B'] < 47][['Country','Status','Year','Hepatitis B','Life expectancy ','Adult Mortality','GDP','Schooling']].sort_values('Hepatitis B')
+#df[df['Measles ']>900.625][['Country','Year','Status','Measles ','Life expectancy ','infant deaths','under-five deaths ','Hepatitis B','Polio','GDP','Schooling']].sort_values('Measles ', ascending=False)
+#df[df['under-five deaths ']>70][['Country','Year','Status','under-five deaths ','Life expectancy ','Polio','Measles ','GDP','Schooling']].sort_values('under-five deaths ', ascending=False)
+#df[df['Polio'] < 49.5][['Country','Year','Polio','Life expectancy ','Adult Mortality','Measles ','GDP','Schooling']].sort_values('Polio',ascending=False)
+#df[df['Country']=='India'][['Year','Population']].sort_values('Year') (population will also be dropped due to mismatched scaling)
+#df[df[' thinness  1-19 years'] > 15.59][['Country','Year',' thinness  1-19 years','Life expectancy ','GDP','Schooling','Adult Mortality']].sort_values(' thinness  1-19 years', ascending=False)
+#(df['Income composition of resources'] == 0).sum()
+#df[df['Income composition of resources']==0][['Country','Year','Income composition of resources','GDP','Schooling','Life expectancy ']].sort_values('Country')
+#(df['Schooling']==0).sum()
+#df[df['Schooling']==0][['Country','Year','Schooling','Income composition of resources','GDP','Life expectancy ']].sort_values('Country')
+# for country in ['China', 'United States of America', 'Nigeria', 'Brazil', 'Pakistan', 'Bangladesh','India']:
+#     print(country)
+#     print(df[df['Country']==country][['Year','Adult Mortality']].sort_values('Year'))
+#     print()
+#df[df['Adult Mortality'] < 50]['Year'].value_counts().sort_index()
+unclean_val.handling_outliers()
+# Since data is positive/negative skewed we will use median to handle missing values
+clean_data=unclean_val.handling_nan('median')
+# 'Country' is ordered as each country is repeated sequentially from 2000-2015 therefore it will also be dropped.Thus not considered beforehand
+clean_data.drop(columns=['Population','percentage expenditure','Country'])
+#Exploratory Data Analysis
+print('Data Information')
+print(df_eda.data_info())
+print('Target Information')
+print(df_eda.target_info())
+#Raw relationship between Life expectancy and other features
+df_eda.raw_rel_target_features(cat_col,disc_col,cont_col)
+correlation=df_eda.target_correlation()
+df_eda.correlated_feature_rel()
+df_eda.yearly_trend()
+
 
 # Data Transformation
 df_to_transform=DataTransformation(clean_data,target_col)
-# encoding categorical variables. Here we have 'Status' column which will have developed=1 and developing=0 values
+# Here we have 'Status' column which will have developed=1 and developing=0 values
 df_encoded=df_to_transform.cat_encoding('Status','Developed','Developing')
 df_to_scaled=DataTransformation(df_encoded,target_col)
 # Scaling the numerical columns
@@ -66,7 +94,6 @@ selection=FeatureSelection(X,y)
 print("Feature Selection")
 selected=selection.select_features()
 # Since thinness(1-19) and thinness(1-5) serving same purpose has nearly same correlation we'll drop thinness(5-9)
-# 'Country' has ordered as each country is repeated sequentially from 2000-2015 therefore it will also be dropped.Thus not considered beforehand
 X_features=X[selected]
 X_features=X_features.drop(columns=[' thinness 5-9 years','Adult Mortality','infant deaths','under-five deaths '] )
 
